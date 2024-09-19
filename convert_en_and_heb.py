@@ -87,32 +87,14 @@ layout_to_lang = {
     '0x401': 'ar',  # Arabic
     '0x419': 'ru'   # Russian
 }
-#
-# def get_keyboard_layouts():
-#     user32 = ctypes.WinDLL('user32', use_last_error=True)
-#
-#     # Get the number of keyboard layouts
-#     n_layouts = user32.GetKeyboardLayoutList(0, None)
-#
-#     # Create an array to hold the layouts
-#     layouts = (ctypes.wintypes.HKL * n_layouts)()
-#     user32.GetKeyboardLayoutList(n_layouts, layouts)
-#
-#     installed_layouts = []
-#     for layout in layouts:
-#         layout_id = hex(layout & (2 ** 16 - 1))  # Extract the lower 16 bits which hold the language identifier
-#         installed_layouts.append(layout_id)
-#
-#     return installed_layouts
-#
-# def get_language_list(layout_codes):
-#     return [layout_to_lang.get(layout) for layout in layout_codes]
-#
-#
+
+
 def get_next_language(languages, lang):
-    current_index = languages.index(lang)
-    next_language = languages[(current_index + 1) % len(languages)]
-    return next_language
+    if lang in languages:
+        current_index = languages.index(lang)
+        next_language = languages[(current_index + 1) % len(languages)]
+        return next_language
+    return None
 
 
 if __name__ == "__main__":
@@ -125,7 +107,10 @@ if __name__ == "__main__":
     for line in lines:
         detected_language = detect_language(line)
         next_language = get_next_language(all_layouts_installed, detected_language)
-        converted_line = convert_text(line, detected_language, next_language)
+        if next_language is None:
+            converted_line = line
+        else:
+            converted_line = convert_text(line, detected_language, next_language)
         converted_lines.append(converted_line)
 
     converted_text = '\n'.join(converted_lines)
