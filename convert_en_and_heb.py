@@ -98,6 +98,7 @@ def get_next_language(languages, lang):
 
 
 if __name__ == "__main__":
+
     input_text = sys.argv[1]
     all_layouts_installed = sys.argv[2].split(',')
     lines = input_text.splitlines()
@@ -105,14 +106,22 @@ if __name__ == "__main__":
     converted_lines = []
 
     for line in lines:
-        detected_language = detect_language(line)
-        next_language = get_next_language(all_layouts_installed, detected_language)
-        if next_language is None:
-            converted_line = line
-        else:
-            converted_line = convert_text(line, detected_language, next_language)
+        words = line.split()  # Split line into words
+        converted_words = []
+
+        for word in words:
+            detected_language = detect_language(word)  # Detect language for each word
+            next_language = get_next_language(all_layouts_installed, detected_language)
+
+            if next_language is None:
+                converted_word = word
+            else:
+                converted_word = convert_text(word, detected_language, next_language)  # Convert word
+            converted_words.append(converted_word)
+
+        converted_line = ' '.join(converted_words)  # Reassemble the words into a line
         converted_lines.append(converted_line)
 
-    converted_text = '\n'.join(converted_lines)
+    converted_text = '\n'.join(converted_lines)  # Reassemble the lines into text
 
     print(converted_text)
